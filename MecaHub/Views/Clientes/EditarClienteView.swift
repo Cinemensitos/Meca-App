@@ -1,0 +1,88 @@
+import SwiftUI
+
+struct EditarClienteView: View {
+    let cliente: Cliente
+    @ObservedObject var viewModel: ClienteViewModel
+    @Environment(\.dismiss) var dismiss
+    
+    @State private var nombre: String
+    @State private var telefono: String
+    @State private var correo: String
+    @State private var showEliminar = false
+    
+    init(cliente: Cliente, viewModel: ClienteViewModel) {
+        self.cliente = cliente
+        self.viewModel = viewModel
+        _nombre = State(initialValue: cliente.nombre)
+        _telefono = State(initialValue: cliente.telefono ?? "")
+        _correo = State(initialValue: cliente.correo ?? "")
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    
+                    campo("Nombre completo", texto: $nombre)
+                    campo("Teléfono", texto: $telefono)
+                    campo("Correo electrónico", texto: $correo)
+                    
+                    PrimaryButton(titulo: "Guardar cambios") {
+                        var actualizado = cliente
+                        actualizado.nombre = nombre
+                        actualizado.telefono = telefono
+                        actualizado.correo = correo
+                        viewModel.update(id: cliente.id, cliente: actualizado) { success in
+                            if success { dismiss() }
+                        }
+                    }
+                    
+                    DangerButton(titulo: "Eliminar cliente") {
+                        showEliminar = true
+                    }
+                    
+                    Text("⚠️ Eliminar este cliente es irreversible.")
+                        .font(.system(size: 12))
+                        .foregroundColor(.red)
+                        .padding(10)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red.opacity(0.08))
+                        .cornerRadius(8)
+                }
+                .padding()
+            }
+            .navigationTitle("Editar Cliente")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancelar") { dismiss() }
+                        .foregroundColor(Color("SecondaryColor"))
+                }
+            }
+            .alert("Eliminar cliente", isPresented: $showEliminar) {
+                Button("Eliminar", role: .destructive) {
+                    viewModel.delete(id: cliente.id) { success in
+                        if success { dismiss() }
+                    }
+                }
+                Button("Cancelar", role: .cancel) {}
+            } message: {
+                Text("¿Eliminar a \(cliente.nombre)? Esta acción es irreversible.")
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func campo(_ titulo: String, texto: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(titulo)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.secondary)
+            TextField(titulo, text: texto)
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+        }
+    }
+}

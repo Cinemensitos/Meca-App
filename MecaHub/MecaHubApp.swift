@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct MecaHubApp: App {
+    @StateObject var mecanicoVM = MecanicoViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if mecanicoVM.isLoggedIn {
+                MainTabView()
+            } else {
+                LoginView()
+                    .environmentObject(mecanicoVM)
+            }
         }
     }
 }
