@@ -31,7 +31,7 @@ struct DetallePiezaView: View {
                 
                 // Info
                 VStack(spacing: 0) {
-                    infoRow("💰 Precio unitario", valor: "$\(pieza.precio, specifier: "%.2f")")
+                    infoRow("💰 Precio unitario", valor: String(format: "$%.2f", pieza.precio))
                     Divider().padding(.leading, 16)
                     infoRow("📦 Stock actual", valor: "\(pieza.stockActual) piezas")
                     Divider().padding(.leading, 16)

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var viewModel = MecanicoViewModel()
+    @EnvironmentObject var viewModel: MecanicoViewModel
     @State private var correo: String = ""
     @State private var password: String = ""
     @State private var showError: Bool = false
