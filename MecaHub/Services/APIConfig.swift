@@ -1,5 +1,5 @@
 import Foundation
 
 enum APIConfig {
-    static let baseURL = "http://localhost:8080/MechAPI/api"
+    static let baseURL = "https://api-mech.onrender.com/api"
 }
