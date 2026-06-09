@@ -45,12 +45,12 @@ class ClienteViewModel: ObservableObject {
     }
     
     func delete(id: Int, completion: @escaping (Bool) -> Void) {
-        ClienteService.delete(id: id) { success in
+        ClienteService.delete(id: id) { success, errorMessage in
             if success {
                 self.clientes.removeAll { $0.id == id }
                 completion(true)
             } else {
-                self.errorMessage = "Error al eliminar cliente"
+                self.errorMessage = errorMessage ?? "Error al eliminar cliente"
                 completion(false)
             }
         }

@@ -10,6 +10,8 @@ struct EditarClienteView: View {
     @State private var telefono: String
     @State private var correo: String
     @State private var showEliminar = false
+    @State private var showErrorEliminar = false
+    @State private var errorEliminarMsg = ""
 
     init(cliente: Cliente, viewModel: ClienteViewModel) {
         self.clienteInicial = cliente
@@ -64,12 +66,22 @@ struct EditarClienteView: View {
             .alert("Eliminar cliente", isPresented: $showEliminar) {
                 Button("Eliminar", role: .destructive) {
                     viewModel.delete(id: clienteActual.id) { success in
-                        if success { dismiss() }
+                        if success {
+                            dismiss()
+                        } else {
+                            errorEliminarMsg = viewModel.errorMessage
+                            showErrorEliminar = true
+                        }
                     }
                 }
                 Button("Cancelar", role: .cancel) {}
             } message: {
                 Text("¿Eliminar a \(clienteActual.nombre)? Esta acción es irreversible.")
+            }
+            .alert("Error al eliminar", isPresented: $showErrorEliminar) {
+                Button("Entendido", role: .cancel) {}
+            } message: {
+                Text(errorEliminarMsg)
             }
         }
     }
