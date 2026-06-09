@@ -70,12 +70,14 @@ struct ListaOrdenesView: View {
                         
                         LazyVStack(spacing: 12) {
                             ForEach(ordenesBuscadas) { orden in
-                                NavigationLink {
-                                    DetalleOrdenView(orden: orden, viewModel: viewModel)
-                                } label: {
-                                    OrderCard(orden: orden)
-                                        .padding(.horizontal)
+                                VStack(alignment: .leading, spacing: 0) {
+                                    NavigationLink {
+                                        EditarOrdenView(orden: orden, viewModel: viewModel)
+                                    } label: {
+                                        OrderCard(orden: orden)
+                                    }
                                 }
+                                .padding(.horizontal)
                             }
                         }
                         .padding(.bottom)

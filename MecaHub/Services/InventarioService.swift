@@ -231,14 +231,31 @@ class InventarioService {
     
     static func delete(id: Int, completion: @escaping (Bool) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/inventario/delete/\(id)") else { return }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        
-        URLSession.shared.dataTask(with: request) { _, _, error in
-            DispatchQueue.main.async {
-                completion(error == nil)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error en request delete: \(error.localizedDescription)")
+                DispatchQueue.main.async { completion(false) }
+                return
             }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Respuesta delete no es HTTP válida")
+                DispatchQueue.main.async { completion(false) }
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let responseBody = data.flatMap { String(data: $0, encoding: .utf8) } ?? "sin contenido"
+                print("Error HTTP delete (\(httpResponse.statusCode)): \(responseBody)")
+                DispatchQueue.main.async { completion(false) }
+                return
+            }
+
+            DispatchQueue.main.async { completion(true) }
         }.resume()
     }
 }
