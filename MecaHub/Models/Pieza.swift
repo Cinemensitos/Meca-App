@@ -1,6 +1,6 @@
 import Foundation
 
-struct Pieza: Codable, Identifiable {
+struct Pieza: Codable, Identifiable, Equatable {
     var id: Int
     var nombre: String
     var categoria: String?

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Mecanico: Codable, Identifiable {
+struct Mecanico: Codable, Identifiable, Equatable {
     var id: Int
     var nombre: String
     var correo: String

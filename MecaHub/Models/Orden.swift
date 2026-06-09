@@ -1,6 +1,6 @@
 import Foundation
 
-struct Orden: Codable, Identifiable {
+struct Orden: Codable, Identifiable, Equatable {
     var id: Int
     var clienteId: Int
     var clienteNombre: String?

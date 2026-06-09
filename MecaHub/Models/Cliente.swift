@@ -1,6 +1,6 @@
 import Foundation
 
-struct Cliente: Codable, Identifiable {
+struct Cliente: Codable, Identifiable, Equatable {
     var id: Int
     var nombre: String
     var telefono: String?

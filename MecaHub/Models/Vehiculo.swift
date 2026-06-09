@@ -1,6 +1,6 @@
 import Foundation
 
-struct Vehiculo: Codable, Identifiable {
+struct Vehiculo: Codable, Identifiable, Equatable {
     var id: Int
     var clienteId: Int
     var clienteNombre: String?
