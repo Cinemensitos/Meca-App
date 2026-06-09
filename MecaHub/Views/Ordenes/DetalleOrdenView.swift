@@ -79,9 +79,18 @@ struct DetalleOrdenView: View {
                 NavigationLink {
                     EditarOrdenView(orden: orden, viewModel: viewModel)
                 } label: {
-                    PrimaryButton(titulo: "Editar orden") {}
+                    HStack {
+                        Image(systemName: "checkmark")
+                        Text("Editar orden")
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("PrimaryColor"))
+                    .foregroundColor(.white)
+                    .cornerRadius(14)
                 }
-                
+
                 DangerButton(titulo: "Eliminar orden") {
                     showEliminar = true
                 }
