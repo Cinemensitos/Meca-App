@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct EditarPiezaView: View {
-    let pieza: Pieza
+    let piezaInicial: Pieza
     @ObservedObject var viewModel: InventarioViewModel
     @Environment(\.dismiss) var dismiss
-    
+    @State private var piezaActual: Pieza
+
     @State private var nombre: String
     @State private var categoria: String
     @State private var codigo: String
@@ -13,10 +14,13 @@ struct EditarPiezaView: View {
     @State private var stockMinimo: String
     @State private var descripcion: String
     @State private var showEliminar = false
-    
+    @State private var showErrorEliminar = false
+    @State private var errorEliminarMsg = ""
+
     init(pieza: Pieza, viewModel: InventarioViewModel) {
-        self.pieza = pieza
+        self.piezaInicial = pieza
         self.viewModel = viewModel
+        _piezaActual = State(initialValue: pieza)
         _nombre = State(initialValue: pieza.nombre)
         _categoria = State(initialValue: pieza.categoria ?? "")
         _codigo = State(initialValue: pieza.codigo ?? "")
@@ -54,7 +58,7 @@ struct EditarPiezaView: View {
                     }
                     
                     PrimaryButton(titulo: "Guardar cambios") {
-                        var actualizada = pieza
+                        var actualizada = piezaActual
                         actualizada.nombre = nombre
                         actualizada.categoria = categoria
                         actualizada.codigo = codigo
@@ -62,7 +66,7 @@ struct EditarPiezaView: View {
                         actualizada.stockActual = Int(stockActual) ?? 0
                         actualizada.stockMinimo = Int(stockMinimo) ?? 5
                         actualizada.descripcion = descripcion
-                        viewModel.update(id: pieza.id, pieza: actualizada) { success in
+                        viewModel.update(id: piezaActual.id, pieza: actualizada) { success in
                             if success { dismiss() }
                         }
                     }
@@ -91,13 +95,23 @@ struct EditarPiezaView: View {
             }
             .alert("Eliminar pieza", isPresented: $showEliminar) {
                 Button("Eliminar", role: .destructive) {
-                    viewModel.delete(id: pieza.id) { success in
-                        if success { dismiss() }
+                    viewModel.delete(id: piezaActual.id) { success in
+                        if success {
+                            dismiss()
+                        } else {
+                            errorEliminarMsg = viewModel.errorMessage
+                            showErrorEliminar = true
+                        }
                     }
                 }
                 Button("Cancelar", role: .cancel) {}
             } message: {
-                Text("¿Eliminar \(pieza.nombre)? Esta acción es irreversible.")
+                Text("¿Eliminar \(piezaActual.nombre)? Esta acción es irreversible.")
+            }
+            .alert("Error al eliminar", isPresented: $showErrorEliminar) {
+                Button("Entendido", role: .cancel) {}
+            } message: {
+                Text(errorEliminarMsg)
             }
         }
     }

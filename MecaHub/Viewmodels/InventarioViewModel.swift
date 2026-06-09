@@ -54,12 +54,12 @@ class InventarioViewModel: ObservableObject {
     }
     
     func delete(id: Int, completion: @escaping (Bool) -> Void) {
-        InventarioService.delete(id: id) { success in
+        InventarioService.delete(id: id) { success, errorMessage in
             if success {
                 self.piezas.removeAll { $0.id == id }
                 completion(true)
             } else {
-                self.errorMessage = "Error al eliminar pieza"
+                self.errorMessage = errorMessage ?? "Error al eliminar pieza"
                 completion(false)
             }
         }

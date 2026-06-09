@@ -1,10 +1,17 @@
 import SwiftUI
 
 struct DetallePiezaView: View {
-    let pieza: Pieza
+    let piezaInicial: Pieza
     @ObservedObject var viewModel: InventarioViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var pieza: Pieza
     @State private var showEditar = false
+
+    init(pieza: Pieza, viewModel: InventarioViewModel) {
+        self.piezaInicial = pieza
+        self.viewModel = viewModel
+        _pieza = State(initialValue: pieza)
+    }
     
     var body: some View {
         ScrollView {
@@ -75,6 +82,13 @@ struct DetallePiezaView: View {
         }
         .sheet(isPresented: $showEditar) {
             EditarPiezaView(pieza: pieza, viewModel: viewModel)
+        }
+        .onChange(of: viewModel.piezas) { _ in
+            if !viewModel.piezas.contains(where: { $0.id == pieza.id }) {
+                dismiss()
+            } else if let piezaActualizada = viewModel.piezas.first(where: { $0.id == pieza.id }) {
+                pieza = piezaActualizada
+            }
         }
     }
     

@@ -229,7 +229,7 @@ class InventarioService {
         }.resume()
     }
     
-    static func delete(id: Int, completion: @escaping (Bool) -> Void) {
+    static func delete(id: Int, completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/inventario/delete/\(id)") else { return }
 
         var request = URLRequest(url: url)
@@ -238,24 +238,31 @@ class InventarioService {
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error en request delete: \(error.localizedDescription)")
-                DispatchQueue.main.async { completion(false) }
+                DispatchQueue.main.async { completion(false, error.localizedDescription) }
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 print("Respuesta delete no es HTTP válida")
-                DispatchQueue.main.async { completion(false) }
+                DispatchQueue.main.async { completion(false, "Error de conexión") }
                 return
             }
 
             guard (200...299).contains(httpResponse.statusCode) else {
                 let responseBody = data.flatMap { String(data: $0, encoding: .utf8) } ?? "sin contenido"
                 print("Error HTTP delete (\(httpResponse.statusCode)): \(responseBody)")
-                DispatchQueue.main.async { completion(false) }
+
+                let errorMsg: String
+                if responseBody.contains("foreign key constraint") {
+                    errorMsg = "No se puede eliminar esta pieza porque está vinculada a órdenes. Elimina primero las órdenes que la usan."
+                } else {
+                    errorMsg = "Error al eliminar pieza (HTTP \(httpResponse.statusCode))"
+                }
+                DispatchQueue.main.async { completion(false, errorMsg) }
                 return
             }
 
-            DispatchQueue.main.async { completion(true) }
+            DispatchQueue.main.async { completion(true, nil) }
         }.resume()
     }
 }
