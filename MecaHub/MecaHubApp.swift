@@ -14,7 +14,7 @@ struct MecaHubApp: App {
     var body: some Scene {
         WindowGroup {
             if mecanicoVM.isLoggedIn {
-                MainTabView()
+                MainTabView(mecanicoVM: mecanicoVM)
             } else {
                 LoginView()
                     .environmentObject(mecanicoVM)

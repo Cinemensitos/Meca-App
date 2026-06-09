@@ -96,6 +96,11 @@ struct PerfilView: View {
             .sheet(isPresented: $showConfig) {
                 ConfiguracionView()
             }
+            .onAppear {
+                if viewModel.mecanicoActual == nil {
+                    print("⚠️ mecanicoActual es nil en PerfilView")
+                }
+            }
         }
     }
     

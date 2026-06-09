@@ -4,7 +4,7 @@ struct MainTabView: View {
     @StateObject var ordenVM     = OrdenViewModel()
     @StateObject var clienteVM   = ClienteViewModel()
     @StateObject var inventarioVM = InventarioViewModel()
-    @StateObject var mecanicoVM  = MecanicoViewModel()
+    @ObservedObject var mecanicoVM: MecanicoViewModel
     
     var body: some View {
         TabView {
