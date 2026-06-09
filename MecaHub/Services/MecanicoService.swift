@@ -1,20 +1,16 @@
 import Foundation
 
 class MecanicoService {
-    
-    // FIX: decoder con convertFromSnakeCase para recibir empleado_num, fecha_ingreso,
-    // created_at, password_hash correctamente desde la API.
+
+    // decoder sin conversión (el servidor envía camelCase)
     private static var decoder: JSONDecoder {
         let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
         return d
     }
-    
-    // FIX: encoder con convertToSnakeCase para enviar password_hash al endpoint /login
-    // y empleado_num, fecha_ingreso al endpoint /save y /update.
+
+    // encoder sin conversión (el servidor espera camelCase)
     private static var encoder: JSONEncoder {
         let e = JSONEncoder()
-        e.keyEncodingStrategy = .convertToSnakeCase
         return e
     }
     
@@ -105,7 +101,7 @@ class MecanicoService {
     static func login(correo: String, password: String, completion: @escaping (Mecanico?) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/mecanicos/login") else { return }
 
-        let body = Mecanico(id: 0, nombre: "", correo: correo, passwordHash: password)
+        let body = LoginRequest(correo: correo, passwordHash: password)
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

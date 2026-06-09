@@ -11,11 +11,16 @@ struct Mecanico: Codable, Identifiable {
     var estado: String?
     var fechaIngreso: String?
     var createdAt: String?
-    
+
     var iniciales: String {
         let partes = nombre.split(separator: " ")
         let primera = partes.first?.prefix(1) ?? ""
         let segunda = partes.dropFirst().first?.prefix(1) ?? ""
         return "\(primera)\(segunda)".uppercased()
     }
+}
+
+struct LoginRequest: Codable {
+    let correo: String
+    let passwordHash: String
 }

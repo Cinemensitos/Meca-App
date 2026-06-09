@@ -1,18 +1,16 @@
 import Foundation
 
 class VehiculoService {
-    
-    // FIX: decoder con convertFromSnakeCase para recibir cliente_id, cliente_nombre, created_at
+
+    // decoder sin conversión (el servidor envía camelCase)
     private static var decoder: JSONDecoder {
         let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
         return d
     }
-    
-    // FIX: encoder con convertToSnakeCase para enviar cliente_id correctamente al backend
+
+    // encoder sin conversión (el servidor espera camelCase)
     private static var encoder: JSONEncoder {
         let e = JSONEncoder()
-        e.keyEncodingStrategy = .convertToSnakeCase
         return e
     }
     

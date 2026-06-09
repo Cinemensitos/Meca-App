@@ -1,20 +1,16 @@
 import Foundation
 
 class OrdenService {
-    
-    // FIX: decoder con convertFromSnakeCase para recibir campos como
-    // cliente_nombre, vehiculo_desc, costo_mano_obra, etc. correctamente.
+
+    // decoder sin conversión (el servidor envía camelCase)
     private static var decoder: JSONDecoder {
         let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
         return d
     }
-    
-    // FIX: encoder con convertToSnakeCase para enviar campos como
-    // cliente_id, vehiculo_id, costo_mano_obra, etc. al backend.
+
+    // encoder sin conversión (el servidor espera camelCase)
     private static var encoder: JSONEncoder {
         let e = JSONEncoder()
-        e.keyEncodingStrategy = .convertToSnakeCase
         return e
     }
     

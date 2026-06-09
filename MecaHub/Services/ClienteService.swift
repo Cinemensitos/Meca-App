@@ -1,17 +1,16 @@
 import Foundation
 
 class ClienteService {
-    
-    // Decoder consistente con el resto de services
+
+    // Decoder sin conversión (el servidor envía camelCase)
     private static var decoder: JSONDecoder {
         let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
         return d
     }
-    
+
+    // Encoder sin conversión (el servidor espera camelCase)
     private static var encoder: JSONEncoder {
         let e = JSONEncoder()
-        e.keyEncodingStrategy = .convertToSnakeCase
         return e
     }
     
