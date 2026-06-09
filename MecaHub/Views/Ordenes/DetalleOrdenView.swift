@@ -1,10 +1,17 @@
 import SwiftUI
 
 struct DetalleOrdenView: View {
-    let orden: Orden
+    let ordenInicial: Orden
     @ObservedObject var viewModel: OrdenViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var orden: Orden
     @State private var showEliminar = false
+
+    init(orden: Orden, viewModel: OrdenViewModel) {
+        self.ordenInicial = orden
+        self.viewModel = viewModel
+        _orden = State(initialValue: orden)
+    }
     
     var body: some View {
         ScrollView {
@@ -105,6 +112,11 @@ struct DetalleOrdenView: View {
                     EditarOrdenView(orden: orden, viewModel: viewModel)
                 }
                 .foregroundColor(Color("PrimaryColor"))
+            }
+        }
+        .onAppear {
+            if let ordenActualizada = viewModel.ordenes.first(where: { $0.id == orden.id }) {
+                orden = ordenActualizada
             }
         }
         .alert("Eliminar orden", isPresented: $showEliminar) {
