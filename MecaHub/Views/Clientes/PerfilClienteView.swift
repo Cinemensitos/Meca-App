@@ -1,12 +1,19 @@
 import SwiftUI
 
 struct PerfilClienteView: View {
-    let cliente: Cliente
+    let clienteInicial: Cliente
     @ObservedObject var viewModel: ClienteViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var cliente: Cliente
     @State private var showEditar = false
     @State private var showEliminar = false
     @StateObject var ordenVM = OrdenViewModel()
+
+    init(cliente: Cliente, viewModel: ClienteViewModel) {
+        self.clienteInicial = cliente
+        self.viewModel = viewModel
+        _cliente = State(initialValue: cliente)
+    }
     
     var iniciales: String {
         let partes = cliente.nombre.split(separator: " ")
@@ -75,6 +82,13 @@ struct PerfilClienteView: View {
         }
         .onAppear {
             ordenVM.getByCliente(clienteId: cliente.id)
+        }
+        .onChange(of: viewModel.clientes) { _ in
+            if !viewModel.clientes.contains(where: { $0.id == cliente.id }) {
+                dismiss()
+            } else if let clienteActualizado = viewModel.clientes.first(where: { $0.id == cliente.id }) {
+                cliente = clienteActualizado
+            }
         }
     }
     

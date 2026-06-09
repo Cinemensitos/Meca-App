@@ -1,18 +1,20 @@
 import SwiftUI
 
 struct EditarClienteView: View {
-    let cliente: Cliente
+    let clienteInicial: Cliente
     @ObservedObject var viewModel: ClienteViewModel
     @Environment(\.dismiss) var dismiss
-    
+    @State private var clienteActual: Cliente
+
     @State private var nombre: String
     @State private var telefono: String
     @State private var correo: String
     @State private var showEliminar = false
-    
+
     init(cliente: Cliente, viewModel: ClienteViewModel) {
-        self.cliente = cliente
+        self.clienteInicial = cliente
         self.viewModel = viewModel
+        _clienteActual = State(initialValue: cliente)
         _nombre = State(initialValue: cliente.nombre)
         _telefono = State(initialValue: cliente.telefono ?? "")
         _correo = State(initialValue: cliente.correo ?? "")
@@ -28,11 +30,11 @@ struct EditarClienteView: View {
                     campo("Correo electrónico", texto: $correo)
                     
                     PrimaryButton(titulo: "Guardar cambios") {
-                        var actualizado = cliente
+                        var actualizado = clienteActual
                         actualizado.nombre = nombre
                         actualizado.telefono = telefono
                         actualizado.correo = correo
-                        viewModel.update(id: cliente.id, cliente: actualizado) { success in
+                        viewModel.update(id: clienteActual.id, cliente: actualizado) { success in
                             if success { dismiss() }
                         }
                     }
@@ -61,13 +63,13 @@ struct EditarClienteView: View {
             }
             .alert("Eliminar cliente", isPresented: $showEliminar) {
                 Button("Eliminar", role: .destructive) {
-                    viewModel.delete(id: cliente.id) { success in
+                    viewModel.delete(id: clienteActual.id) { success in
                         if success { dismiss() }
                     }
                 }
                 Button("Cancelar", role: .cancel) {}
             } message: {
-                Text("¿Eliminar a \(cliente.nombre)? Esta acción es irreversible.")
+                Text("¿Eliminar a \(clienteActual.nombre)? Esta acción es irreversible.")
             }
         }
     }
