@@ -2,6 +2,22 @@ import Foundation
 
 class OrdenService {
     
+    // FIX: decoder con convertFromSnakeCase para recibir campos como
+    // cliente_nombre, vehiculo_desc, costo_mano_obra, etc. correctamente.
+    private static var decoder: JSONDecoder {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }
+    
+    // FIX: encoder con convertToSnakeCase para enviar campos como
+    // cliente_id, vehiculo_id, costo_mano_obra, etc. al backend.
+    private static var encoder: JSONEncoder {
+        let e = JSONEncoder()
+        e.keyEncodingStrategy = .convertToSnakeCase
+        return e
+    }
+    
     static func getAll(completion: @escaping ([Orden]) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/ordenes/getAll") else { return }
         
@@ -12,7 +28,7 @@ class OrdenService {
                 return
             }
             do {
-                let ordenes = try JSONDecoder().decode([Orden].self, from: data)
+                let ordenes = try decoder.decode([Orden].self, from: data)
                 DispatchQueue.main.async { completion(ordenes) }
             } catch {
                 print("Error decodificando ordenes: \(error)")
@@ -30,7 +46,7 @@ class OrdenService {
                 return
             }
             do {
-                let orden = try JSONDecoder().decode(Orden.self, from: data)
+                let orden = try decoder.decode(Orden.self, from: data)
                 DispatchQueue.main.async { completion(orden) }
             } catch {
                 print("Error decodificando orden: \(error)")
@@ -48,7 +64,7 @@ class OrdenService {
                 return
             }
             do {
-                let ordenes = try JSONDecoder().decode([Orden].self, from: data)
+                let ordenes = try decoder.decode([Orden].self, from: data)
                 DispatchQueue.main.async { completion(ordenes) }
             } catch {
                 print("Error decodificando ordenes por estado: \(error)")
@@ -66,7 +82,7 @@ class OrdenService {
                 return
             }
             do {
-                let ordenes = try JSONDecoder().decode([Orden].self, from: data)
+                let ordenes = try decoder.decode([Orden].self, from: data)
                 DispatchQueue.main.async { completion(ordenes) }
             } catch {
                 print("Error decodificando ordenes por cliente: \(error)")
@@ -81,7 +97,7 @@ class OrdenService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(orden)
+        request.httpBody = try? encoder.encode(orden)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -89,7 +105,7 @@ class OrdenService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Orden.self, from: data)
+                let result = try decoder.decode(Orden.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta save orden: \(error)")
@@ -104,7 +120,7 @@ class OrdenService {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(orden)
+        request.httpBody = try? encoder.encode(orden)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -112,7 +128,7 @@ class OrdenService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Orden.self, from: data)
+                let result = try decoder.decode(Orden.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta update orden: \(error)")

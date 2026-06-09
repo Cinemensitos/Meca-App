@@ -2,6 +2,20 @@ import Foundation
 
 class VehiculoService {
     
+    // FIX: decoder con convertFromSnakeCase para recibir cliente_id, cliente_nombre, created_at
+    private static var decoder: JSONDecoder {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }
+    
+    // FIX: encoder con convertToSnakeCase para enviar cliente_id correctamente al backend
+    private static var encoder: JSONEncoder {
+        let e = JSONEncoder()
+        e.keyEncodingStrategy = .convertToSnakeCase
+        return e
+    }
+    
     static func getAll(completion: @escaping ([Vehiculo]) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/vehiculos/getAll") else { return }
         
@@ -12,7 +26,7 @@ class VehiculoService {
                 return
             }
             do {
-                let vehiculos = try JSONDecoder().decode([Vehiculo].self, from: data)
+                let vehiculos = try decoder.decode([Vehiculo].self, from: data)
                 DispatchQueue.main.async { completion(vehiculos) }
             } catch {
                 print("Error decodificando vehiculos: \(error)")
@@ -30,7 +44,7 @@ class VehiculoService {
                 return
             }
             do {
-                let vehiculo = try JSONDecoder().decode(Vehiculo.self, from: data)
+                let vehiculo = try decoder.decode(Vehiculo.self, from: data)
                 DispatchQueue.main.async { completion(vehiculo) }
             } catch {
                 print("Error decodificando vehiculo: \(error)")
@@ -48,7 +62,7 @@ class VehiculoService {
                 return
             }
             do {
-                let vehiculos = try JSONDecoder().decode([Vehiculo].self, from: data)
+                let vehiculos = try decoder.decode([Vehiculo].self, from: data)
                 DispatchQueue.main.async { completion(vehiculos) }
             } catch {
                 print("Error decodificando vehiculos por cliente: \(error)")
@@ -63,7 +77,7 @@ class VehiculoService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(vehiculo)
+        request.httpBody = try? encoder.encode(vehiculo)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -71,7 +85,7 @@ class VehiculoService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Vehiculo.self, from: data)
+                let result = try decoder.decode(Vehiculo.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta save vehiculo: \(error)")
@@ -86,7 +100,7 @@ class VehiculoService {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(vehiculo)
+        request.httpBody = try? encoder.encode(vehiculo)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -94,7 +108,7 @@ class VehiculoService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Vehiculo.self, from: data)
+                let result = try decoder.decode(Vehiculo.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta update vehiculo: \(error)")

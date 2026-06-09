@@ -2,6 +2,21 @@ import Foundation
 
 class InventarioService {
     
+    // FIX: decoder con convertFromSnakeCase para recibir stock_actual, stock_minimo,
+    // estado_stock, updated_at correctamente.
+    private static var decoder: JSONDecoder {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }
+    
+    // FIX: encoder con convertToSnakeCase para enviar stock_actual, stock_minimo al backend.
+    private static var encoder: JSONEncoder {
+        let e = JSONEncoder()
+        e.keyEncodingStrategy = .convertToSnakeCase
+        return e
+    }
+    
     static func getAll(completion: @escaping ([Pieza]) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/inventario/getAll") else { return }
         
@@ -12,7 +27,7 @@ class InventarioService {
                 return
             }
             do {
-                let piezas = try JSONDecoder().decode([Pieza].self, from: data)
+                let piezas = try decoder.decode([Pieza].self, from: data)
                 DispatchQueue.main.async { completion(piezas) }
             } catch {
                 print("Error decodificando inventario: \(error)")
@@ -30,7 +45,7 @@ class InventarioService {
                 return
             }
             do {
-                let pieza = try JSONDecoder().decode(Pieza.self, from: data)
+                let pieza = try decoder.decode(Pieza.self, from: data)
                 DispatchQueue.main.async { completion(pieza) }
             } catch {
                 print("Error decodificando pieza: \(error)")
@@ -48,7 +63,7 @@ class InventarioService {
                 return
             }
             do {
-                let piezas = try JSONDecoder().decode([Pieza].self, from: data)
+                let piezas = try decoder.decode([Pieza].self, from: data)
                 DispatchQueue.main.async { completion(piezas) }
             } catch {
                 print("Error decodificando inventario por estado: \(error)")
@@ -63,7 +78,7 @@ class InventarioService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(pieza)
+        request.httpBody = try? encoder.encode(pieza)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -71,7 +86,7 @@ class InventarioService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Pieza.self, from: data)
+                let result = try decoder.decode(Pieza.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta save pieza: \(error)")
@@ -86,7 +101,7 @@ class InventarioService {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(pieza)
+        request.httpBody = try? encoder.encode(pieza)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -94,7 +109,7 @@ class InventarioService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Pieza.self, from: data)
+                let result = try decoder.decode(Pieza.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta update pieza: \(error)")

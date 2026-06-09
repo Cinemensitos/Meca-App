@@ -2,6 +2,19 @@ import Foundation
 
 class ClienteService {
     
+    // Decoder consistente con el resto de services
+    private static var decoder: JSONDecoder {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }
+    
+    private static var encoder: JSONEncoder {
+        let e = JSONEncoder()
+        e.keyEncodingStrategy = .convertToSnakeCase
+        return e
+    }
+    
     static func getAll(completion: @escaping ([Cliente]) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/clientes/getAll") else { return }
         
@@ -12,7 +25,7 @@ class ClienteService {
                 return
             }
             do {
-                let clientes = try JSONDecoder().decode([Cliente].self, from: data)
+                let clientes = try decoder.decode([Cliente].self, from: data)
                 DispatchQueue.main.async { completion(clientes) }
             } catch {
                 print("Error decodificando clientes: \(error)")
@@ -30,7 +43,7 @@ class ClienteService {
                 return
             }
             do {
-                let cliente = try JSONDecoder().decode(Cliente.self, from: data)
+                let cliente = try decoder.decode(Cliente.self, from: data)
                 DispatchQueue.main.async { completion(cliente) }
             } catch {
                 print("Error decodificando cliente: \(error)")
@@ -45,7 +58,7 @@ class ClienteService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(cliente)
+        request.httpBody = try? encoder.encode(cliente)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -53,10 +66,10 @@ class ClienteService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Cliente.self, from: data)
+                let result = try decoder.decode(Cliente.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
-                print("Error decodificando respuesta save: \(error)")
+                print("Error decodificando respuesta save cliente: \(error)")
                 DispatchQueue.main.async { completion(nil) }
             }
         }.resume()
@@ -68,7 +81,7 @@ class ClienteService {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(cliente)
+        request.httpBody = try? encoder.encode(cliente)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -76,10 +89,10 @@ class ClienteService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Cliente.self, from: data)
+                let result = try decoder.decode(Cliente.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
-                print("Error decodificando respuesta update: \(error)")
+                print("Error decodificando respuesta update cliente: \(error)")
                 DispatchQueue.main.async { completion(nil) }
             }
         }.resume()

@@ -2,6 +2,22 @@ import Foundation
 
 class MecanicoService {
     
+    // FIX: decoder con convertFromSnakeCase para recibir empleado_num, fecha_ingreso,
+    // created_at, password_hash correctamente desde la API.
+    private static var decoder: JSONDecoder {
+        let d = JSONDecoder()
+        d.keyDecodingStrategy = .convertFromSnakeCase
+        return d
+    }
+    
+    // FIX: encoder con convertToSnakeCase para enviar password_hash al endpoint /login
+    // y empleado_num, fecha_ingreso al endpoint /save y /update.
+    private static var encoder: JSONEncoder {
+        let e = JSONEncoder()
+        e.keyEncodingStrategy = .convertToSnakeCase
+        return e
+    }
+    
     static func getAll(completion: @escaping ([Mecanico]) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/mecanicos/getAll") else { return }
         
@@ -12,7 +28,7 @@ class MecanicoService {
                 return
             }
             do {
-                let mecanicos = try JSONDecoder().decode([Mecanico].self, from: data)
+                let mecanicos = try decoder.decode([Mecanico].self, from: data)
                 DispatchQueue.main.async { completion(mecanicos) }
             } catch {
                 print("Error decodificando mecanicos: \(error)")
@@ -30,7 +46,7 @@ class MecanicoService {
                 return
             }
             do {
-                let mecanico = try JSONDecoder().decode(Mecanico.self, from: data)
+                let mecanico = try decoder.decode(Mecanico.self, from: data)
                 DispatchQueue.main.async { completion(mecanico) }
             } catch {
                 print("Error decodificando mecanico: \(error)")
@@ -39,6 +55,8 @@ class MecanicoService {
         }.resume()
     }
     
+    // FIX: el encoder con convertToSnakeCase convierte passwordHash → password_hash,
+    // que es exactamente el campo que MecanicoResource.java espera via Gson.
     static func login(correo: String, password: String, completion: @escaping (Mecanico?) -> Void) {
         guard let url = URL(string: "\(APIConfig.baseURL)/mecanicos/login") else { return }
         
@@ -47,7 +65,7 @@ class MecanicoService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(body)
+        request.httpBody = try? encoder.encode(body)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -55,7 +73,7 @@ class MecanicoService {
                 return
             }
             do {
-                let mecanico = try JSONDecoder().decode(Mecanico.self, from: data)
+                let mecanico = try decoder.decode(Mecanico.self, from: data)
                 DispatchQueue.main.async { completion(mecanico) }
             } catch {
                 print("Error decodificando respuesta login: \(error)")
@@ -70,7 +88,7 @@ class MecanicoService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(mecanico)
+        request.httpBody = try? encoder.encode(mecanico)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -78,7 +96,7 @@ class MecanicoService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Mecanico.self, from: data)
+                let result = try decoder.decode(Mecanico.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta save mecanico: \(error)")
@@ -93,7 +111,7 @@ class MecanicoService {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(mecanico)
+        request.httpBody = try? encoder.encode(mecanico)
         
         URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data, error == nil else {
@@ -101,7 +119,7 @@ class MecanicoService {
                 return
             }
             do {
-                let result = try JSONDecoder().decode(Mecanico.self, from: data)
+                let result = try decoder.decode(Mecanico.self, from: data)
                 DispatchQueue.main.async { completion(result) }
             } catch {
                 print("Error decodificando respuesta update mecanico: \(error)")
