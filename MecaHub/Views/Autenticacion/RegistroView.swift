@@ -36,11 +36,11 @@ struct RegistroView: View {
                 }
                 
                 Group {
-                    campoFormulario(titulo: "Nombre completo", placeholder: "Ej. Carlos Mendoza", texto: $nombre)
-                    campoFormulario(titulo: "Correo electrónico", placeholder: "correo@taller.com", texto: $correo)
-                    campoFormulario(titulo: "Teléfono", placeholder: "Ej. 55 1234 5678", texto: $telefono)
-                    campoFormulario(titulo: "Contraseña", placeholder: "••••••••", texto: $password, isSecure: true)
-                    campoFormulario(titulo: "Confirmar contraseña", placeholder: "••••••••", texto: $confirmPassword, isSecure: true)
+                    campoFormulario(titulo: "Nombre completo", placeholder: "Ej. Carlos Mendoza", texto: $nombre, fieldType: .nombre)
+                    campoFormulario(titulo: "Correo electrónico", placeholder: "correo@taller.com", texto: $correo, fieldType: .correo)
+                    campoFormulario(titulo: "Teléfono", placeholder: "Ej. 55 1234 5678", texto: $telefono, fieldType: .telefono)
+                    campoFormulario(titulo: "Contraseña", placeholder: "••••••••", texto: $password, isSecure: true, fieldType: .password)
+                    campoFormulario(titulo: "Confirmar contraseña", placeholder: "••••••••", texto: $confirmPassword, isSecure: true, fieldType: .password)
                 }
                 
                 if showError {
@@ -95,8 +95,15 @@ struct RegistroView: View {
         }
     }
     
+    enum FieldType {
+        case nombre
+        case correo
+        case telefono
+        case password
+    }
+
     @ViewBuilder
-    func campoFormulario(titulo: String, placeholder: String, texto: Binding<String>, isSecure: Bool = false) -> some View {
+    func campoFormulario(titulo: String, placeholder: String, texto: Binding<String>, isSecure: Bool = false, fieldType: FieldType = .nombre) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(titulo)
                 .font(.system(size: 12, weight: .semibold))
@@ -111,6 +118,8 @@ struct RegistroView: View {
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
+                    .keyboardType(fieldType == .correo ? .emailAddress : .default)
+                    .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
             }
         }
     }

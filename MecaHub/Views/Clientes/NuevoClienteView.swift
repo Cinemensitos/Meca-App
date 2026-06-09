@@ -13,11 +13,11 @@ struct NuevoClienteView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    
-                    campo("Nombre completo", placeholder: "Ej. Juan García", texto: $nombre)
-                    campo("Teléfono", placeholder: "Ej. 55 1234 5678", texto: $telefono)
+
+                    campo("Nombre completo", placeholder: "Ej. Juan García", texto: $nombre, fieldType: .nombre)
+                    campo("Teléfono", placeholder: "Ej. 55 1234 5678", texto: $telefono, fieldType: .telefono)
                         .keyboardType(.phonePad)
-                    campo("Correo electrónico", placeholder: "juan@email.com", texto: $correo)
+                    campo("Correo electrónico", placeholder: "juan@email.com", texto: $correo, fieldType: .correo)
                         .keyboardType(.emailAddress)
                     
                     if showError {
@@ -46,8 +46,14 @@ struct NuevoClienteView: View {
         }
     }
     
+    enum FieldType {
+        case nombre
+        case correo
+        case telefono
+    }
+
     @ViewBuilder
-    func campo(_ titulo: String, placeholder: String, texto: Binding<String>) -> some View {
+    func campo(_ titulo: String, placeholder: String, texto: Binding<String>, fieldType: FieldType = .nombre) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(titulo)
                 .font(.system(size: 12, weight: .semibold))
@@ -56,6 +62,7 @@ struct NuevoClienteView: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
+                .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
         }
     }
 }

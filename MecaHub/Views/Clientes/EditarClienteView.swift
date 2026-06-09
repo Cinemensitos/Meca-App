@@ -24,10 +24,10 @@ struct EditarClienteView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    
-                    campo("Nombre completo", texto: $nombre)
-                    campo("Teléfono", texto: $telefono)
-                    campo("Correo electrónico", texto: $correo)
+
+                    campo("Nombre completo", texto: $nombre, fieldType: .nombre)
+                    campo("Teléfono", texto: $telefono, fieldType: .telefono)
+                    campo("Correo electrónico", texto: $correo, fieldType: .correo)
                     
                     PrimaryButton(titulo: "Guardar cambios") {
                         var actualizado = clienteActual
@@ -74,8 +74,14 @@ struct EditarClienteView: View {
         }
     }
     
+    enum FieldType {
+        case nombre
+        case correo
+        case telefono
+    }
+
     @ViewBuilder
-    func campo(_ titulo: String, texto: Binding<String>) -> some View {
+    func campo(_ titulo: String, texto: Binding<String>, fieldType: FieldType = .nombre) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(titulo)
                 .font(.system(size: 12, weight: .semibold))
@@ -85,6 +91,7 @@ struct EditarClienteView: View {
                 .background(Color(.systemBackground))
                 .cornerRadius(12)
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
         }
     }
 }
