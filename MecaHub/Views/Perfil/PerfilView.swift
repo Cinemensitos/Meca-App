@@ -58,10 +58,6 @@ struct PerfilView: View {
                             botonAccion(icono: "gearshape", label: "Configuración") {
                                 showConfig = true
                             }
-                            Divider().padding(.leading, 44)
-                            botonAccion(icono: "lock", label: "Cambiar contraseña") {
-                                showEditar = true
-                            }
                         }
                         .background(Color(.systemBackground))
                         .cornerRadius(14)

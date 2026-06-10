@@ -12,6 +12,8 @@ struct NuevaPiezaView: View {
     @State private var stockMinimo: String = ""
     @State private var descripcion: String = ""
     @State private var showError = false
+
+    let categorias = ["Frenos", "Motor", "Transmisión", "Suspensión", "Eléctrico", "Carrocería", "Climatización", "Interior", "Otro"]
     
     var body: some View {
         NavigationStack {
@@ -19,7 +21,23 @@ struct NuevaPiezaView: View {
                 VStack(spacing: 16) {
                     
                     campo("Nombre", placeholder: "Ej. Pastillas de freno", texto: $nombre)
-                    campo("Categoría", placeholder: "Ej. Frenos", texto: $categoria)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Categoría")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.secondary)
+                        Picker("Categoría", selection: $categoria) {
+                            Text("Selecciona una categoría").tag("")
+                            ForEach(categorias, id: \.self) { cat in
+                                Text(cat).tag(cat)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    }
+
                     campo("Código", placeholder: "Ej. BRKPD-001", texto: $codigo)
                     
                     HStack(spacing: 12) {

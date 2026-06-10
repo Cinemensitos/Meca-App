@@ -6,6 +6,7 @@ struct DetalleOrdenView: View {
     @Environment(\.dismiss) var dismiss
     @State private var orden: Orden
     @State private var showEliminar = false
+    @State private var refreshTrigger = UUID()
 
     init(orden: Orden, viewModel: OrdenViewModel) {
         self.ordenInicial = orden
@@ -87,7 +88,7 @@ struct DetalleOrdenView: View {
                     EditarOrdenView(orden: orden, viewModel: viewModel)
                 } label: {
                     HStack {
-                        Image(systemName: "checkmark")
+                        Image(systemName: "pencil.circle.fill")
                         Text("Editar orden")
                             .fontWeight(.semibold)
                     }
@@ -115,8 +116,11 @@ struct DetalleOrdenView: View {
             }
         }
         .onAppear {
-            if let ordenActualizada = viewModel.ordenes.first(where: { $0.id == orden.id }) {
-                orden = ordenActualizada
+            viewModel.getAll()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if let ordenActualizada = viewModel.ordenes.first(where: { $0.id == orden.id }) {
+                    orden = ordenActualizada
+                }
             }
         }
         .alert("Eliminar orden", isPresented: $showEliminar) {

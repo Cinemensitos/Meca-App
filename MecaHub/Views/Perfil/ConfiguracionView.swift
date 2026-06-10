@@ -3,11 +3,11 @@ import SwiftUI
 
 struct ConfiguracionView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var notifPush: Bool = true
-    @State private var notifCorreo: Bool = false
-    @State private var notifSonido: Bool = true
-    @State private var estadoEnLinea: Bool = true
-    @State private var compartirStats: Bool = false
+    @State private var notifPush: Bool = UserDefaults.standard.bool(forKey: "notifPush") || true
+    @State private var notifCorreo: Bool = UserDefaults.standard.bool(forKey: "notifCorreo")
+    @State private var notifSonido: Bool = UserDefaults.standard.bool(forKey: "notifSonido") || true
+    @State private var estadoEnLinea: Bool = UserDefaults.standard.bool(forKey: "estadoEnLinea") || true
+    @State private var compartirStats: Bool = UserDefaults.standard.bool(forKey: "compartirStats")
     
     var body: some View {
         NavigationStack {
@@ -48,6 +48,11 @@ struct ConfiguracionView: View {
                 }
             }
             .accentColor(Color("PrimaryColor"))
+            .onChange(of: notifPush) { UserDefaults.standard.set(notifPush, forKey: "notifPush") }
+            .onChange(of: notifCorreo) { UserDefaults.standard.set(notifCorreo, forKey: "notifCorreo") }
+            .onChange(of: notifSonido) { UserDefaults.standard.set(notifSonido, forKey: "notifSonido") }
+            .onChange(of: estadoEnLinea) { UserDefaults.standard.set(estadoEnLinea, forKey: "estadoEnLinea") }
+            .onChange(of: compartirStats) { UserDefaults.standard.set(compartirStats, forKey: "compartirStats") }
         }
     }
 }

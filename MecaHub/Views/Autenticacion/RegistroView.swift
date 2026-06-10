@@ -56,11 +56,33 @@ struct RegistroView: View {
                         showError = true
                         return
                     }
+
+                    if let emailError = ValidationHelper.validateEmail(correo) {
+                        errorMsg = emailError
+                        showError = true
+                        return
+                    }
+
+                    if !telefono.isEmpty {
+                        if let phoneError = ValidationHelper.validatePhone(telefono) {
+                            errorMsg = phoneError
+                            showError = true
+                            return
+                        }
+                    }
+
                     guard password == confirmPassword else {
                         errorMsg = "Las contraseñas no coinciden"
                         showError = true
                         return
                     }
+
+                    guard password.count >= 6 else {
+                        errorMsg = "La contraseña debe tener al menos 6 caracteres"
+                        showError = true
+                        return
+                    }
+
                     let nuevo = Mecanico(
                         id: 0,
                         nombre: nombre,

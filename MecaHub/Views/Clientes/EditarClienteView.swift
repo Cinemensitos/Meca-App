@@ -12,6 +12,8 @@ struct EditarClienteView: View {
     @State private var showEliminar = false
     @State private var showErrorEliminar = false
     @State private var errorEliminarMsg = ""
+    @State private var showError = false
+    @State private var errorMsg = ""
 
     init(cliente: Cliente, viewModel: ClienteViewModel) {
         self.clienteInicial = cliente
@@ -30,8 +32,36 @@ struct EditarClienteView: View {
                     campo("Nombre completo", texto: $nombre, fieldType: .nombre)
                     campo("Teléfono", texto: $telefono, fieldType: .telefono)
                     campo("Correo electrónico", texto: $correo, fieldType: .correo)
-                    
+
+                    if showError {
+                        Text(errorMsg)
+                            .font(.system(size: 13))
+                            .foregroundColor(.red)
+                    }
+
                     PrimaryButton(titulo: "Guardar cambios") {
+                        guard !nombre.isEmpty else {
+                            errorMsg = "El nombre es obligatorio"
+                            showError = true
+                            return
+                        }
+
+                        if !correo.isEmpty {
+                            if let emailError = ValidationHelper.validateEmail(correo) {
+                                errorMsg = emailError
+                                showError = true
+                                return
+                            }
+                        }
+
+                        if !telefono.isEmpty {
+                            if let phoneError = ValidationHelper.validatePhone(telefono) {
+                                errorMsg = phoneError
+                                showError = true
+                                return
+                            }
+                        }
+
                         var actualizado = clienteActual
                         actualizado.nombre = nombre
                         actualizado.telefono = telefono

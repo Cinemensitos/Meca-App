@@ -10,6 +10,8 @@ struct EditarPerfilView: View {
     @State private var telefono: String
     @State private var cargo: String
     @State private var showEliminar = false
+    @State private var showError = false
+    @State private var errorMsg = ""
     
     init(mecanico: Mecanico, viewModel: MecanicoViewModel) {
         self.mecanico = mecanico
@@ -35,13 +37,39 @@ struct EditarPerfilView: View {
                     campo("Cargo / Rol", texto: $cargo, fieldType: .nombre)
                     campo("Teléfono", texto: $telefono, fieldType: .telefono)
                     campo("Correo electrónico", texto: $correo, fieldType: .correo)
-                    
+
+                    if showError {
+                        Text(errorMsg)
+                            .font(.system(size: 13))
+                            .foregroundColor(.red)
+                    }
+
                     PrimaryButton(titulo: "Guardar cambios") {
+                        guard !nombre.isEmpty else {
+                            errorMsg = "El nombre es obligatorio"
+                            showError = true
+                            return
+                        }
+
+                        if let emailError = ValidationHelper.validateEmail(correo) {
+                            errorMsg = emailError
+                            showError = true
+                            return
+                        }
+
+                        if !telefono.isEmpty {
+                            if let phoneError = ValidationHelper.validatePhone(telefono) {
+                                errorMsg = phoneError
+                                showError = true
+                                return
+                            }
+                        }
+
                         var actualizado = mecanico
                         actualizado.nombre = nombre
                         actualizado.correo = correo
                         actualizado.telefono = telefono
-                        actualizado.cargo = cargo
+                        actualizado.cargo = cargo.isEmpty ? nil : cargo
                         viewModel.update(id: mecanico.id, mecanico: actualizado) { success in
                             if success { dismiss() }
                         }

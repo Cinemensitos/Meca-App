@@ -17,8 +17,8 @@ struct NuevaOrdenView: View {
     @StateObject var vehiculoVM  = VehiculoViewModel()
     @StateObject var mecanicoVM  = MecanicoViewModel()
     
-    let estados = ["recibido", "diagnostico", "reparacion", "listo", "entregado"]
-    let estadosLabel = ["Recibido", "Diagnóstico", "En Reparación", "Listo", "Entregado"]
+    let estados = ["recibido", "diagnostico", "reparacion"]
+    let estadosLabel = ["Recibido", "Diagnóstico", "En Reparación"]
     
     var body: some View {
         NavigationStack {

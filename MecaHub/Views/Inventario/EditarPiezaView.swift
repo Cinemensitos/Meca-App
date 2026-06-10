@@ -9,13 +9,15 @@ struct EditarPiezaView: View {
     @State private var nombre: String
     @State private var categoria: String
     @State private var codigo: String
-    @State private var precio: String
-    @State private var stockActual: String
-    @State private var stockMinimo: String
+    @State private var precioDouble: Double
+    @State private var stockActualInt: Int
+    @State private var stockMinimoInt: Int
     @State private var descripcion: String
     @State private var showEliminar = false
     @State private var showErrorEliminar = false
     @State private var errorEliminarMsg = ""
+
+    let categorias = ["Frenos", "Motor", "Transmisión", "Suspensión", "Eléctrico", "Carrocería", "Climatización", "Interior", "Otro"]
 
     init(pieza: Pieza, viewModel: InventarioViewModel) {
         self.piezaInicial = pieza
@@ -24,9 +26,9 @@ struct EditarPiezaView: View {
         _nombre = State(initialValue: pieza.nombre)
         _categoria = State(initialValue: pieza.categoria ?? "")
         _codigo = State(initialValue: pieza.codigo ?? "")
-        _precio = State(initialValue: String(pieza.precio))
-        _stockActual = State(initialValue: String(pieza.stockActual))
-        _stockMinimo = State(initialValue: String(pieza.stockMinimo))
+        _precioDouble = State(initialValue: pieza.precio)
+        _stockActualInt = State(initialValue: pieza.stockActual)
+        _stockMinimoInt = State(initialValue: pieza.stockMinimo)
         _descripcion = State(initialValue: pieza.descripcion ?? "")
     }
     
@@ -36,14 +38,79 @@ struct EditarPiezaView: View {
                 VStack(spacing: 16) {
                     
                     campo("Nombre", texto: $nombre)
-                    campo("Categoría", texto: $categoria)
-                    campo("Código", texto: $codigo)
-                    
-                    HStack(spacing: 12) {
-                        campoParcial("Precio ($)", texto: $precio)
-                        campoParcial("Stock actual", texto: $stockActual)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Categoría")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.secondary)
+                        Picker("Categoría", selection: $categoria) {
+                            Text("Selecciona una categoría").tag("")
+                            ForEach(categorias, id: \.self) { cat in
+                                Text(cat).tag(cat)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
                     }
-                    campoParcial("Stock mínimo", texto: $stockMinimo)
+
+                    campo("Código", texto: $codigo)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Precio ($)")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(String(format: "%.2f", precioDouble))
+                                .fontWeight(.semibold)
+                        }
+                        Stepper(value: $precioDouble, in: 0...Double.infinity, step: 0.1) {
+                            Text("Ajustar precio")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Stock actual")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(stockActualInt)")
+                                .fontWeight(.semibold)
+                        }
+                        Stepper(value: $stockActualInt, in: 0...Int.max, step: 1) {
+                            Text("Ajustar stock")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Stock mínimo")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(stockMinimoInt)")
+                                .fontWeight(.semibold)
+                        }
+                        Stepper(value: $stockMinimoInt, in: 0...Int.max, step: 1) {
+                            Text("Ajustar stock mínimo")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                    }
                     
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Descripción")
@@ -60,12 +127,12 @@ struct EditarPiezaView: View {
                     PrimaryButton(titulo: "Guardar cambios") {
                         var actualizada = piezaActual
                         actualizada.nombre = nombre
-                        actualizada.categoria = categoria
-                        actualizada.codigo = codigo
-                        actualizada.precio = Double(precio) ?? 0
-                        actualizada.stockActual = Int(stockActual) ?? 0
-                        actualizada.stockMinimo = Int(stockMinimo) ?? 5
-                        actualizada.descripcion = descripcion
+                        actualizada.categoria = categoria.isEmpty ? nil : categoria
+                        actualizada.codigo = codigo.isEmpty ? nil : codigo
+                        actualizada.precio = precioDouble
+                        actualizada.stockActual = stockActualInt
+                        actualizada.stockMinimo = stockMinimoInt
+                        actualizada.descripcion = descripcion.isEmpty ? nil : descripcion
                         viewModel.update(id: piezaActual.id, pieza: actualizada) { success in
                             if success { dismiss() }
                         }

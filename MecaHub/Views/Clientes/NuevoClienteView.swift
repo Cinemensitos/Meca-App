@@ -8,6 +8,7 @@ struct NuevoClienteView: View {
     @State private var telefono: String = ""
     @State private var correo: String = ""
     @State private var showError: Bool = false
+    @State private var errorMsg: String = ""
     
     var body: some View {
         NavigationStack {
@@ -21,16 +22,34 @@ struct NuevoClienteView: View {
                         .keyboardType(.emailAddress)
                     
                     if showError {
-                        Text("El nombre es obligatorio")
+                        Text(errorMsg)
                             .font(.system(size: 13))
                             .foregroundColor(.red)
                     }
-                    
+
                     PrimaryButton(titulo: "Guardar") {
                         guard !nombre.isEmpty else {
+                            errorMsg = "El nombre es obligatorio"
                             showError = true
                             return
                         }
+
+                        if !correo.isEmpty {
+                            if let emailError = ValidationHelper.validateEmail(correo) {
+                                errorMsg = emailError
+                                showError = true
+                                return
+                            }
+                        }
+
+                        if !telefono.isEmpty {
+                            if let phoneError = ValidationHelper.validatePhone(telefono) {
+                                errorMsg = phoneError
+                                showError = true
+                                return
+                            }
+                        }
+
                         let nuevo = Cliente(id: 0, nombre: nombre, telefono: telefono, correo: correo)
                         viewModel.save(cliente: nuevo) { success in
                             if success { dismiss() }
