@@ -28,6 +28,16 @@ class MecanicoViewModel: ObservableObject {
             if let mecanico = mecanico {
                 self.mecanicoActual = mecanico
                 self.isLoggedIn = true
+                print("✅ Login exitoso:")
+                print("  - ID: \(mecanico.id)")
+                print("  - Nombre: \(mecanico.nombre)")
+                print("  - Correo: \(mecanico.correo)")
+                print("  - Teléfono: \(mecanico.telefono ?? "nil")")
+                print("  - Cargo: \(mecanico.cargo ?? "nil")")
+                print("  - Empleado #: \(mecanico.empleadoNum ?? "nil")")
+                print("  - Estado: \(mecanico.estado ?? "nil")")
+                print("  - Fecha Ingreso: \(mecanico.fechaIngreso ?? "nil")")
+                print("  - Created At: \(mecanico.createdAt ?? "nil")")
                 completion(true)
             } else {
                 self.errorMessage = "Correo o contraseña incorrectos"
