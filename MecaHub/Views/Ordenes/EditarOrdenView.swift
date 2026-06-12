@@ -6,8 +6,8 @@ struct EditarOrdenView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var estado: String
-    @State private var costoManoObra: String
-    @State private var costoRefacciones: String
+    @State private var costoManoObra: Double
+    @State private var costoRefacciones: Double
     @State private var descripcion: String
     @State private var showEliminar = false
     
@@ -18,8 +18,8 @@ struct EditarOrdenView: View {
         self.orden = orden
         self.viewModel = viewModel
         _estado = State(initialValue: orden.estado)
-        _costoManoObra = State(initialValue: String(orden.costoManoObra))
-        _costoRefacciones = State(initialValue: String(orden.costoRefacciones))
+        _costoManoObra = State(initialValue: orden.costoManoObra)
+        _costoRefacciones = State(initialValue: orden.costoRefacciones)
         _descripcion = State(initialValue: orden.descripcion ?? "")
     }
     
@@ -80,39 +80,51 @@ struct EditarOrdenView: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Divider()
-                
-                HStack(spacing: 12) {
+
+                VStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Mano de obra")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.secondary)
-                        TextField("0.00", text: $costoManoObra)
-                            .keyboardType(.decimalPad)
-                            .padding()
-                            .background(Color(.systemBackground))
-                            .cornerRadius(12)
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                        HStack {
+                            Text("Mano de obra")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("$\(String(format: "%.2f", costoManoObra))")
+                                .fontWeight(.semibold)
+                        }
+                        Stepper(value: $costoManoObra, in: 0...Double.infinity, step: 1.0) {
+                            Text("Ajustar mano de obra")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
                     }
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Refacciones")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.secondary)
-                        TextField("0.00", text: $costoRefacciones)
-                            .keyboardType(.decimalPad)
-                            .padding()
-                            .background(Color(.systemBackground))
-                            .cornerRadius(12)
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
+                        HStack {
+                            Text("Refacciones")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("$\(String(format: "%.2f", costoRefacciones))")
+                                .fontWeight(.semibold)
+                        }
+                        Stepper(value: $costoRefacciones, in: 0...Double.infinity, step: 1.0) {
+                            Text("Ajustar refacciones")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("PrimaryColor"), lineWidth: 2))
                     }
                 }
                 
                 PrimaryButton(titulo: "Guardar Orden") {
                     var actualizada = orden
                     actualizada.estado = estado
-                    actualizada.costoManoObra = Double(costoManoObra) ?? 0
-                    actualizada.costoRefacciones = Double(costoRefacciones) ?? 0
-                    actualizada.costoTotal = (Double(costoManoObra) ?? 0) + (Double(costoRefacciones) ?? 0)
-                    actualizada.descripcion = descripcion
+                    actualizada.costoManoObra = costoManoObra
+                    actualizada.costoRefacciones = costoRefacciones
+                    actualizada.costoTotal = costoManoObra + costoRefacciones
+                    actualizada.descripcion = descripcion.isEmpty ? nil : descripcion
                     viewModel.update(id: orden.id, orden: actualizada) { success in
                         if success { dismiss() }
                     }

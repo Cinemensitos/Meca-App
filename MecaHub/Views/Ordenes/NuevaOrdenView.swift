@@ -8,8 +8,8 @@ struct NuevaOrdenView: View {
     @State private var vehiculoId: Int = 0
     @State private var mecanicoId: Int = 0
     @State private var estado: String = "recibido"
-    @State private var costoManoObra: String = "0"
-    @State private var costoRefacciones: String = "0"
+    @State private var costoManoObra: Double = 0
+    @State private var costoRefacciones: Double = 0
     @State private var descripcion: String = ""
     @State private var showError: Bool = false
     
@@ -89,26 +89,38 @@ struct NuevaOrdenView: View {
                     
                     // Costos
                     seccionHeader("6. Costos")
-                    HStack(spacing: 12) {
+                    VStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Mano de obra")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.secondary)
-                            TextField("0.00", text: $costoManoObra)
-                                .keyboardType(.decimalPad)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                            HStack {
+                                Text("Mano de obra")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", costoManoObra))")
+                                    .fontWeight(.semibold)
+                            }
+                            Stepper(value: $costoManoObra, in: 0...Double.infinity, step: 1.0) {
+                                Text("Ajustar mano de obra")
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
                         }
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Refacciones")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(.secondary)
-                            TextField("0.00", text: $costoRefacciones)
-                                .keyboardType(.decimalPad)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                            HStack {
+                                Text("Refacciones")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", costoRefacciones))")
+                                    .fontWeight(.semibold)
+                            }
+                            Stepper(value: $costoRefacciones, in: 0...Double.infinity, step: 1.0) {
+                                Text("Ajustar refacciones")
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
                         }
                     }
                     
@@ -129,9 +141,9 @@ struct NuevaOrdenView: View {
                             vehiculoId: vehiculoId,
                             mecanicoId: mecanicoId,
                             estado: estado,
-                            costoManoObra: Double(costoManoObra) ?? 0,
-                            costoRefacciones: Double(costoRefacciones) ?? 0,
-                            costoTotal: 0,
+                            costoManoObra: costoManoObra,
+                            costoRefacciones: costoRefacciones,
+                            costoTotal: costoManoObra + costoRefacciones,
                             descripcion: descripcion
                         )
                         viewModel.save(orden: nueva) { success in
