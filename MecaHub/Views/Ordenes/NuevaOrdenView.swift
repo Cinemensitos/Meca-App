@@ -12,6 +12,8 @@ struct NuevaOrdenView: View {
     @State private var costoRefacciones: Double = 0
     @State private var descripcion: String = ""
     @State private var showError: Bool = false
+    @State private var showSuccess: Bool = false
+    @State private var successMessage: String = ""
     
     @StateObject var clienteVM   = ClienteViewModel()
     @StateObject var vehiculoVM  = VehiculoViewModel()
@@ -129,7 +131,20 @@ struct NuevaOrdenView: View {
                             .font(.system(size: 13))
                             .foregroundColor(.red)
                     }
-                    
+
+                    if showSuccess {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(successMessage)
+                                .font(.system(size: 13))
+                                .foregroundColor(.green)
+                        }
+                        .padding(10)
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+
                     PrimaryButton(titulo: "Guardar Orden") {
                         guard clienteId != 0, vehiculoId != 0, mecanicoId != 0 else {
                             showError = true
@@ -147,7 +162,16 @@ struct NuevaOrdenView: View {
                             descripcion: descripcion
                         )
                         viewModel.save(orden: nueva) { success in
-                            if success { dismiss() }
+                            if success {
+                                successMessage = "✓ Orden creada exitosamente"
+                                showSuccess = true
+                                showError = false
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                    limpiarCampos()
+                                    showSuccess = false
+                                }
+                            }
                         }
                     }
                     
@@ -174,5 +198,15 @@ struct NuevaOrdenView: View {
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
         Divider()
+    }
+
+    func limpiarCampos() {
+        clienteId = 0
+        vehiculoId = 0
+        mecanicoId = 0
+        estado = "recibido"
+        costoManoObra = 0
+        costoRefacciones = 0
+        descripcion = ""
     }
 }

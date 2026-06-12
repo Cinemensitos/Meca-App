@@ -9,6 +9,8 @@ struct NuevoClienteView: View {
     @State private var correo: String = ""
     @State private var showError: Bool = false
     @State private var errorMsg: String = ""
+    @State private var showSuccess: Bool = false
+    @State private var successMessage: String = ""
     
     var body: some View {
         NavigationStack {
@@ -25,6 +27,19 @@ struct NuevoClienteView: View {
                         Text(errorMsg)
                             .font(.system(size: 13))
                             .foregroundColor(.red)
+                    }
+
+                    if showSuccess {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(successMessage)
+                                .font(.system(size: 13))
+                                .foregroundColor(.green)
+                        }
+                        .padding(10)
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(8)
                     }
 
                     PrimaryButton(titulo: "Guardar") {
@@ -48,7 +63,16 @@ struct NuevoClienteView: View {
 
                         let nuevo = Cliente(id: 0, nombre: nombre, telefono: telefono, correo: correo)
                         viewModel.save(cliente: nuevo) { success in
-                            if success { dismiss() }
+                            if success {
+                                successMessage = "✓ Cliente creado exitosamente"
+                                showSuccess = true
+                                showError = false
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                    limpiarCampos()
+                                    showSuccess = false
+                                }
+                            }
                         }
                     }
                     
@@ -79,5 +103,11 @@ struct NuevoClienteView: View {
                 .cornerRadius(12)
                 .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
         }
+    }
+
+    func limpiarCampos() {
+        nombre = ""
+        telefono = ""
+        correo = ""
     }
 }

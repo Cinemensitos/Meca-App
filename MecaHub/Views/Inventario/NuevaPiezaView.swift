@@ -12,6 +12,8 @@ struct NuevaPiezaView: View {
     @State private var stockMinimo: String = ""
     @State private var descripcion: String = ""
     @State private var showError = false
+    @State private var showSuccess = false
+    @State private var successMessage = ""
 
     let categorias = ["Frenos", "Motor", "Transmisión", "Suspensión", "Eléctrico", "Carrocería", "Climatización", "Interior", "Otro"]
     
@@ -62,7 +64,20 @@ struct NuevaPiezaView: View {
                             .font(.system(size: 13))
                             .foregroundColor(.red)
                     }
-                    
+
+                    if showSuccess {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(successMessage)
+                                .font(.system(size: 13))
+                                .foregroundColor(.green)
+                        }
+                        .padding(10)
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+
                     PrimaryButton(titulo: "Guardar") {
                         guard !nombre.isEmpty, !precio.isEmpty else {
                             showError = true
@@ -79,7 +94,16 @@ struct NuevaPiezaView: View {
                             descripcion: descripcion
                         )
                         viewModel.save(pieza: nueva) { success in
-                            if success { dismiss() }
+                            if success {
+                                successMessage = "✓ Pieza creada exitosamente"
+                                showSuccess = true
+                                showError = false
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                    limpiarCampos()
+                                    showSuccess = false
+                                }
+                            }
                         }
                     }
                     
@@ -117,5 +141,15 @@ struct NuevaPiezaView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
+    }
+
+    func limpiarCampos() {
+        nombre = ""
+        categoria = ""
+        codigo = ""
+        precio = ""
+        stockActual = ""
+        stockMinimo = ""
+        descripcion = ""
     }
 }
