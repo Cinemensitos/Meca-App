@@ -46,20 +46,16 @@ struct EditarClienteView: View {
                             return
                         }
 
-                        if !correo.isEmpty {
-                            if !isValidEmail(correo) {
-                                errorMsg = "Ingresa un correo válido"
-                                showError = true
-                                return
-                            }
+                        if !correo.isEmpty && !correo.isValidEmail {
+                            errorMsg = "Ingresa un correo válido"
+                            showError = true
+                            return
                         }
 
-                        if !telefono.isEmpty {
-                            if !isValidPhone(telefono) {
-                                errorMsg = "El teléfono solo debe contener números"
-                                showError = true
-                                return
-                            }
+                        if !telefono.isEmpty && !telefono.isValidPhone {
+                            errorMsg = "El teléfono solo debe contener números"
+                            showError = true
+                            return
                         }
 
                         var actualizado = clienteActual
@@ -136,16 +132,4 @@ struct EditarClienteView: View {
                 .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
         }
     }
-}
-
-func isValidEmail(_ email: String) -> Bool {
-    let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    let predicate = NSPredicate(format: "SELF MATCHES %@", emailPattern)
-    return predicate.evaluate(with: email)
-}
-
-func isValidPhone(_ phone: String) -> Bool {
-    let phonePattern = "^[0-9\\s\\-\\+\\(\\)]{10,}$"
-    let predicate = NSPredicate(format: "SELF MATCHES %@", phonePattern)
-    return predicate.evaluate(with: phone)
 }
