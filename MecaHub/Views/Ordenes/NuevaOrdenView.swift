@@ -176,6 +176,7 @@ struct NuevaOrdenView: View {
                     }
                     
                     SecondaryButton(titulo: "Cancelar") {
+                        limpiarCampos()
                         dismiss()
                     }
                 }

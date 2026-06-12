@@ -76,7 +76,10 @@ struct NuevoClienteView: View {
                         }
                     }
                     
-                    SecondaryButton(titulo: "Cancelar") { dismiss() }
+                    SecondaryButton(titulo: "Cancelar") {
+                        limpiarCampos()
+                        dismiss()
+                    }
                 }
                 .padding()
             }
