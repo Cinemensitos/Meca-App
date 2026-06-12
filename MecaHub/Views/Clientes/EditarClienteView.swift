@@ -47,16 +47,16 @@ struct EditarClienteView: View {
                         }
 
                         if !correo.isEmpty {
-                            if let emailError = ValidationHelper.validateEmail(correo) {
-                                errorMsg = emailError
+                            if !isValidEmail(correo) {
+                                errorMsg = "Ingresa un correo válido"
                                 showError = true
                                 return
                             }
                         }
 
                         if !telefono.isEmpty {
-                            if let phoneError = ValidationHelper.validatePhone(telefono) {
-                                errorMsg = phoneError
+                            if !isValidPhone(telefono) {
+                                errorMsg = "El teléfono solo debe contener números"
                                 showError = true
                                 return
                             }
@@ -136,4 +136,16 @@ struct EditarClienteView: View {
                 .textInputAutocapitalization(fieldType == .correo ? .never : fieldType == .nombre ? .words : .none)
         }
     }
+}
+
+func isValidEmail(_ email: String) -> Bool {
+    let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+    let predicate = NSPredicate(format: "SELF MATCHES %@", emailPattern)
+    return predicate.evaluate(with: email)
+}
+
+func isValidPhone(_ phone: String) -> Bool {
+    let phonePattern = "^[0-9\\s\\-\\+\\(\\)]{10,}$"
+    let predicate = NSPredicate(format: "SELF MATCHES %@", phonePattern)
+    return predicate.evaluate(with: phone)
 }

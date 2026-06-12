@@ -67,7 +67,7 @@ struct EditarPiezaView: View {
                             Text(String(format: "%.2f", precioDouble))
                                 .fontWeight(.semibold)
                         }
-                        Stepper(value: $precioDouble, in: 0...Double.infinity, step: 0.1) {
+                        Stepper(value: $precioDouble, in: 0...Double.infinity, step: 1.0) {
                             Text("Ajustar precio")
                         }
                         .padding()
