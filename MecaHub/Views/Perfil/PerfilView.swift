@@ -40,9 +40,9 @@ struct PerfilView: View {
                             Divider().padding(.leading, 44)
                             infoRow(icono: "phone", label: "Teléfono", valor: mecanico.telefono ?? "-")
                             Divider().padding(.leading, 44)
-                            infoRow(icono: "creditcard", label: "Empleado #", valor: mecanico.empleadoNum ?? "-")
+                            infoRow(icono: "creditcard", label: "Empleado #", valor: mecanico.empleadoNumDisplay)
                             Divider().padding(.leading, 44)
-                            infoRow(icono: "calendar", label: "Desde", valor: mecanico.fechaIngreso ?? "-")
+                            infoRow(icono: "calendar", label: "Desde", valor: mecanico.fechaIngresoDisplay)
                         }
                         .background(Color(.systemBackground))
                         .cornerRadius(14)

@@ -18,6 +18,33 @@ struct Mecanico: Codable, Identifiable, Equatable {
         let segunda = partes.dropFirst().first?.prefix(1) ?? ""
         return "\(primera)\(segunda)".uppercased()
     }
+
+    var empleadoNumDisplay: String {
+        if let empleado = empleadoNum, !empleado.isEmpty {
+            return empleado
+        }
+        return "EMP\(id)"
+    }
+
+    var fechaIngresoDisplay: String {
+        if let fecha = fechaIngreso, !fecha.isEmpty {
+            return formatDate(fecha)
+        }
+        if let creada = createdAt, !creada.isEmpty {
+            return formatDate(creada)
+        }
+        return "-"
+    }
+
+    private func formatDate(_ dateString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: dateString) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateFormat = "dd/MM/yyyy"
+            return displayFormatter.string(from: date)
+        }
+        return dateString
+    }
 }
 
 struct LoginRequest: Codable {
