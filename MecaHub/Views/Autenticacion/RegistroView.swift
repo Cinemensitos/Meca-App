@@ -89,8 +89,17 @@ struct RegistroView: View {
                         passwordHash: password
                     )
                     viewModel.save(mecanico: nuevo) { success in
-                        if success { dismiss() }
-                        else {
+                        if success {
+                            // Hacer login automático después del registro
+                            viewModel.login(correo: correo, password: password) { loginSuccess in
+                                if loginSuccess {
+                                    dismiss()
+                                } else {
+                                    errorMsg = "Cuenta creada pero no pudimos iniciar sesión automáticamente"
+                                    showError = true
+                                }
+                            }
+                        } else {
                             errorMsg = viewModel.errorMessage
                             showError = true
                         }
